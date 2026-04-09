@@ -1,4 +1,4 @@
-# Welcome to the JSketcher workbench developer guide!
+# Welcome to the JSketcher workbench developer guide
 
 This guide will describe how to create work bench commands and dialogs used as steps in the part history. JSketcher provides a standard way to define new part history commands that create both the new feature geometry and track the user input fields for a particular command. Input fields are standard user interface elements providing text boxes, numeric inputs and drop downs in addition to rich intelligent geometry selection widgets for sketches, edges, faces, ect.
 
@@ -13,7 +13,7 @@ All part history feature commands are added to a folder where you define the:
 
 Full list of OCC commands available here: web/app/cad/craft/e0/OCI.d.ts
 
-# Files
+## Files
 
 When developing or extending existing workbenches each command needs its own folder under the workbench features folder.
 
@@ -39,11 +39,11 @@ The export default object requires the following things to be defined.
 - **label**: String
 - **info**: String
 - **icon**: object
-- **[paramsInfo](#paramsInfo-tool-tip-information)**: Template for history item info popup. Can be used to expose the current values and description info about the operation for tool tips and hover over context cues.
-- **[schema](#Schema-fields-widget-types)**: Model defining the feature dialogs list of input fields, labels and input types. Both the user interface and the feature input properties storage is defined by this unified schema. User interface input widgets are laid out in a vertical stack with in the feature dialog in the order you define here.
-- **run**: This is the actual code that will be executed when the preview button or the "OK" button in the feature dialog is pressed. The values defined in the schema are passed in and can be referenced by the simplified OpenCASCADE api provided by the JSKetcher OpenCASCADE wasm interface library. You can find more information about the functions exposed by this **[here](../web/app/cad/craft/e0/OCI.d.ts)**. The run function must return an object with the following format. This format for the return object is required for all feature commands.
+- **[paramsInfo](#paramsinfo-tool-tip-information)**: Template for history item info popup. Can be used to expose the current values and description info about the operation for tool tips and hover over context cues.
+- **[schema](#schema-fields-widget-types)**: Model defining the feature dialogs list of input fields, labels and input types. Both the user interface and the feature input properties storage is defined by this unified schema. User interface input widgets are laid out in a vertical stack with in the feature dialog in the order you define here.
+- **run**: This is the actual code that will be executed when the preview button or the "OK" button in the feature dialog is pressed. The values defined in the schema are passed in and can be referenced by the simplified OpenCASCADE api provided by the JSKetcher OpenCASCADE wasm interface library. You can find more information about the functions exposed by this **[on this page](../web/app/cad/craft/e0/OCI.d.ts)**. The run function must return an object with the following format. This format for the return object is required for all feature commands.
 
-```
+```javascript
  let resultsOfCommand ={
  created:[],
  consumed:[]
@@ -53,7 +53,7 @@ The export default object requires the following things to be defined.
 
  **Example index.ts file**:
 
-```
+```javascript
 import {roundValueForPresentation as r} from 'cad/craft/operationHelper';
 import {MFace} from "cad/model/mface";
 import {ApplicationContext} from "cad/context";
@@ -157,7 +157,7 @@ export const ExtrudeOperation: OperationDescriptor<ExtrudeParams> = {
 }
 ```
 
-# Schema fields widget types
+## Schema fields widget types
 
 The following widgets are provided to allow rapid development of new modeling feature types. The schema is used to build the stack of UI elements show to the user when a new feature is being added or edited.
 
@@ -185,7 +185,7 @@ Special Widgets:
 
 Example of adding a field to the schema. What ever order you place the items in the schema is the order they will be displayed in the resulting dialog.
 
-```
+```javascript
 export default {
  //. . .
   form: [
@@ -200,12 +200,12 @@ export default {
 }
 ```
 
-## string widget
+### string widget
 
 A simple text entry text entry field.
 Returns a string.
 
-```
+```javascript
   {
     type: 'string',
     label: 'String Field',
@@ -214,13 +214,13 @@ Returns a string.
   },
 ```
 
-## number widget
+### number widget
 
 A simple numeric value entry field.
 Optionally if style property is set can be used as a spinner or slider instead of the regular textbox if left undefined.
 Returns a string.
 
-```
+```javascript
   {
     type: 'number',
     label: 'length',
@@ -230,12 +230,12 @@ Returns a string.
   },
 ```
 
-## checkbox widget
+### checkbox widget
 
 A simple checkbox.
 Returns a true or false value.
 
-```
+```javascript
   {
     type: 'checkbox',
     label: 'Double Sided',
@@ -244,7 +244,7 @@ Returns a true or false value.
   },
 ```
 
-## choice widget
+### choice widget
 
 A choice selection widget providing two styles,
 Options are provided as an array of values.
@@ -252,7 +252,7 @@ The style property can be either "dropdown" or "radio".
 
 Dropdown example:
 
-```
+```javascript
   {
     type: 'choice',
     style: "dropdown",
@@ -265,7 +265,7 @@ Dropdown example:
 
 Radio example:
 
-```
+```javascript
   {
       type: 'choice',
       style: "dropdown",
@@ -276,7 +276,7 @@ Radio example:
   },
 ```
 
-## Select widget
+### Select widget
 
 The select widget allows for user selection of objects from the 3d environnement.  fggfgf
 
@@ -288,7 +288,7 @@ Default value is optional and provides a way to allow user selection performed b
 
 example:
 
-```
+```javascript
   {
     type: 'selection',
     name: 'face',
@@ -302,7 +302,7 @@ example:
   },
 ```
 
-## Vector widget
+### Vector widget
 
 Vector widget provides a method to select a direction in JSketcher.
 The direction can be derived from several input types.
@@ -314,7 +314,7 @@ A checkbox is also provided with his widget that allows the user to invert or "f
 
 example:
 
-```
+```javascript
   {
     type: 'vector',
     name: 'direction',
@@ -323,14 +323,14 @@ example:
   },
 ```
 
-## boolean widget
+### boolean widget
 
 Boolean widget is a special widget that provides a mechanism to capture the intent of the boolean modeling operation and the target shell from the users 3d selection.
 A drop down menu is provided to pick the type of boolean operation with the following options.  "None", "Unite", "Subtract" or "Intersect".
 
 example:
 
-```
+```javascript
   {
     type: 'boolean',
     name: 'boolean',
@@ -341,17 +341,17 @@ example:
 
 There is a special function that is ued in conjunction with the boolean widget placed as the return from the run section of the feature code:
 
-```
+```javascript
 return occ.utils.applyBooleanModifier(tools, params.boolean);
 ```
 
 Normally the return would consist of an object containing the arrays for consumed and created objects. This bit of code takes care of the business of populating these arrays and is the preferred method for performing all boolean operations in JSketcher.
 
-## image widget
+### image widget
 
 Allows for an image to be inserted in to the command dialog to illustrate a commands intent. For example you might show an illustration of what each parameter the user sets would be used in generating a feature.
 
-```
+```javascript
   {
     type: 'image',
     name: 'figure1',
@@ -361,15 +361,15 @@ Allows for an image to be inserted in to the command dialog to illustrate a comm
 
 You must add an import at the top of the command typescript file to use an image in a dialog.
 
-```
+```javascript
 import imageStringLoadedFromImport from './icon.svg';
 ```
 
-## text widget
+### text widget
 
 Allows for text to be added to the dialog with instructions or more sophisticated descriptions of an operation to be shown to the user.
 
-```
+```javascript
   {
     type: 'text',
     name: 'descriptiveText',
@@ -377,11 +377,11 @@ Allows for text to be added to the dialog with instructions or more sophisticate
   }
 ```
 
-## file widget
+### file widget
 
 Allows for from the local file system to be selected and the contents be made avaiable to the feature.
 
-```
+```javascript
   {
     type: 'file',
     name: 'file',
@@ -390,19 +390,19 @@ Allows for from the local file system to be selected and the contents be made av
   },
 ```
 
-## paramsInfo tool tip information
+### paramsInfo tool tip information
 
 The paramsInfo section is used to define a string that shows up when you mouse over a feature from the time line. You can pass in items defined in the schema and use them to form the string template for the tool top text. The tooltip text is displayed when mousing over the feature in the part history.
 
-```
+```javascript
 export default {
-	//. . .
+ //. . .
     paramsInfo: ({ length, width, height }) => `(Cube - Size: ${r(length)}, ${r(width)}, ${r(height)})`,
     //. . . 
 }
 ```
 
-## Entity types
+### Entity types
 
 - EntityKind.SHELL
   - Shell objects represent a solid object. In other cad systems these are some times referred to as bodies.
@@ -422,4 +422,4 @@ export default {
 - EntityKind.LOOP
   - A loop is a 3D curve.
 
-# More documentation to come
+## More documentation to come
